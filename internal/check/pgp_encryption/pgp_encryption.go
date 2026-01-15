@@ -231,9 +231,9 @@ func (s *state) CheckBody(ctx context.Context, header textproto.Header, body buf
 				},
 			}
 		}
-		defer r.Close()
 
 		isEncrypted, err := s.isValidEncryptedMessage(s.subject, s.contentType, r)
+		r.Close()
 		if err != nil {
 			return module.CheckResult{
 				Reject: true,
@@ -263,8 +263,8 @@ func (s *state) CheckBody(ctx context.Context, header textproto.Header, body buf
 				// Also check the message body structure more permissively
 				r2, err := body.Open()
 				if err == nil {
-					defer r2.Close()
 					isSecureJoin := s.isSecureJoinMessagePermissive(s.secureJoin, s.contentType, r2)
+					r2.Close()
 					if isSecureJoin {
 						s.log.Msg("allowing secure join request based on body", "recipient", recipient)
 						continue
