@@ -77,6 +77,7 @@ func IsSecureJoinMessage(header textproto.Header, body io.Reader) bool {
 	// Parse multipart message
 	mpr := multipart.NewReader(body, params["boundary"])
 	partsCount := 0
+	bodyMatches := false
 
 	for {
 		part, err := mpr.NextPart()
@@ -89,6 +90,7 @@ func IsSecureJoinMessage(header textproto.Header, body io.Reader) bool {
 
 		partsCount++
 		if partsCount > 1 {
+			// Too many parts, this is not a valid secure join message
 			return false
 		}
 
@@ -104,12 +106,15 @@ func IsSecureJoinMessage(header textproto.Header, body io.Reader) bool {
 		}
 
 		bodyStr := strings.ToLower(strings.TrimSpace(string(partBody)))
-		if bodyStr != "secure-join: vc-request" && bodyStr != "secure-join: vg-request" {
-			return false
+		
+		// Ensure header and body match for security consistency
+		expectedBody := "secure-join: " + strings.ToLower(secureJoinHeader)
+		if bodyStr == expectedBody {
+			bodyMatches = true
 		}
 	}
 
-	return partsCount == 1
+	return partsCount == 1 && bodyMatches
 }
 
 func IsValidEncryptedMessage(contentType string, body io.Reader) (bool, error) {

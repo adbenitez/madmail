@@ -155,7 +155,7 @@ func TestIsSecureJoinMessage_Valid(t *testing.T) {
 			expectedResult: false,
 		},
 		{
-			name:          "Valid - body can differ from header (both valid)",
+			name:          "Invalid - body mismatch with header",
 			secureJoinHdr: "vc-request",
 			contentType:   "multipart/mixed; boundary=\"boundary123\"",
 			body: "--boundary123\r\n" +
@@ -163,7 +163,7 @@ func TestIsSecureJoinMessage_Valid(t *testing.T) {
 				"\r\n" +
 				"secure-join: vg-request\r\n" +
 				"--boundary123--\r\n",
-			expectedResult: true,
+			expectedResult: false,
 		},
 	}
 
