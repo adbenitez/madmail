@@ -106,7 +106,7 @@ func IsSecureJoinMessage(header textproto.Header, body io.Reader) bool {
 		}
 
 		bodyStr := strings.ToLower(strings.TrimSpace(string(partBody)))
-		
+
 		// Ensure header and body match for security consistency
 		expectedBody := "secure-join: " + strings.ToLower(secureJoinHeader)
 		if bodyStr == expectedBody {
